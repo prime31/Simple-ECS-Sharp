@@ -9,16 +9,29 @@ namespace SimpleECS
         {
             public int HashCode;
             public SparseSet Entities;
+            IComponentStore[] componentStores;
 
-            public GroupData(Registry registry, int hashCode)
+            public GroupData(Registry registry, int hashCode, params IComponentStore[] components)
             {
                 HashCode = hashCode;
                 Entities = new SparseSet(registry.maxEntities);
+                componentStores = components;
             }
 
-            internal void OnEntityAdded(uint entityId) => Entities.Add(entityId);
+            internal void OnEntityAdded(uint entityId)
+            {
+                if (!Entities.Contains(entityId))
+                {
+                    foreach (var store in componentStores)
+                        if (!store.Contains(entityId)) return;
+                    Entities.Add(entityId);
+                }
+            }
 
-            internal void OnEntityRemoved(uint entityId) => Entities.Remove(entityId);
+            internal void OnEntityRemoved(uint entityId)
+            {
+                if (Entities.Contains(entityId)) Entities.Remove(entityId);
+            }
         }
 
         readonly uint maxEntities;
@@ -77,7 +90,7 @@ namespace SimpleECS
             foreach (var group in Groups)
                 if (group.HashCode == hash) return new Group(this, group);
 
-            var groupData = new GroupData(this, hash);
+            var groupData = new GroupData(this, hash, Assure<T>(), Assure<U>());
             Groups.Add(groupData);
 
             Assure<T>().OnAdd += groupData.OnEntityAdded;
@@ -98,7 +111,7 @@ namespace SimpleECS
             foreach (var group in Groups)
                 if (group.HashCode == hash) return new Group(this, group);
 
-            var groupData = new GroupData(this, hash);
+            var groupData = new GroupData(this, hash, Assure<T>(), Assure<U>(), Assure<V>());
             Groups.Add(groupData);
 
             Assure<T>().OnAdd += groupData.OnEntityAdded;

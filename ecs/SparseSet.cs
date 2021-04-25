@@ -6,6 +6,44 @@ namespace SimpleECS
 {
     public class SparseSet : IEnumerable<uint>
     {
+        struct Enumerator : IEnumerator<uint>
+        {
+            uint[] dense;
+            uint size;
+            uint current;
+            uint next;
+
+            public Enumerator(uint[] dense, uint size)
+            {
+                this.dense = dense;
+                this.size = size;
+                current = 0;
+                next = 0;
+            }
+
+            public uint Current => current;
+
+            object IEnumerator.Current => current;
+
+            public void Dispose()
+            {}
+
+            public bool MoveNext()
+            {
+                if (next < size)
+                {
+                    current = dense[next];
+                    next++;
+                    return true;
+                }
+
+                return false;
+            }
+
+            public void Reset() => next = 0;
+        }
+
+
         readonly uint max;
         uint size;
         uint[] dense;
@@ -53,15 +91,7 @@ namespace SimpleECS
 
         public void Clear() => size = 0;
 
-        public IEnumerator<uint> GetEnumerator()
-        {
-            var i = 0;
-            while (i < size)
-            {
-                yield return dense[i];
-                i++;
-            }
-        }
+        public IEnumerator<uint> GetEnumerator() => new Enumerator(this.dense, size);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
