@@ -79,7 +79,7 @@ namespace SimpleECS
             }
         }
 
-        public uint Index(uint value) => sparse[value];
+        public uint Index(uint value) => dense[value];
 
         public bool Contains(uint value)
         {
