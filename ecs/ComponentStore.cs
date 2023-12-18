@@ -33,11 +33,11 @@ namespace SimpleECS
         public void Add(Entity entity, T value)
         {
             Set.Add(entity.Id);
-            instances[Set.Index(entity.Id)] = value;
+            instances[entity.Id] = value;
             OnAdd?.Invoke(entity.Id);
         }
 
-        public ref T Get(uint entityId) => ref instances[Set.Index(entityId)];
+        public ref T Get(uint entityId) => ref instances[entityId];
 
         public bool Contains(uint entityId) => Set.Contains(entityId);
 
