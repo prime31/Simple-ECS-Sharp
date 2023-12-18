@@ -79,8 +79,6 @@ namespace SimpleECS
             }
         }
 
-        public uint Index(uint value) => dense[value];
-
         public bool Contains(uint value)
         {
             if (value >= max || value < 0)
