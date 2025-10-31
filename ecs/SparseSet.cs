@@ -26,7 +26,7 @@ namespace SimpleECS
             object IEnumerator.Current => current;
 
             public void Dispose()
-            {}
+            { }
 
             public bool MoveNext()
             {
@@ -79,7 +79,7 @@ namespace SimpleECS
             }
         }
 
-        public uint Index(uint value) => dense[value];
+        public uint Index(uint value) => sparse[value];
 
         public bool Contains(uint value)
         {
